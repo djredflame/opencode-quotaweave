@@ -12,6 +12,7 @@ import { createDefaultQuotaManager } from './quota/manager.js';
 import type { QuotaAllocation } from './quota/types.js';
 import type { ConfigRoutingEngine } from './routing/config-engine.js';
 import { createConfigRoutingEngine } from './routing/config-engine.js';
+import { modelToCandidate } from './routing/config-model-to-candidate.js';
 import type {
   ConfigRouteRequest,
   ConfigRouteResult,
@@ -201,7 +202,13 @@ export class QuotaWeaveCore {
     if (request.task.requiredCapabilities && request.task.requiredCapabilities.length > 0) {
       configRequest.requiredCapabilities = request.task.requiredCapabilities;
     }
-    const configResult = this.buildConfigRouteRequest(request, configRequest);
+    const { result: configResult, updatedRuntimeState } = this.buildConfigRouteRequest(
+      request,
+      configRequest,
+    );
+
+    // Update runtime state (e.g., Round Robin rotation)
+    this.routingRuntimeState = updatedRuntimeState;
 
     // Convert ConfigRouteResult to RouteResult for backward compatibility
     return Promise.resolve({
@@ -236,12 +243,13 @@ export class QuotaWeaveCore {
       configRequest.category = request.task.type;
     }
 
-    const configResult = this.configRoutingEngine.route(configRequest);
-    return configResult;
+    const routeResult = this.configRoutingEngine.route(configRequest);
+    return routeResult;
   }
 
   /**
    * Simulate a routing decision (pure, no side effects, no LLM calls)
+   * Does NOT mutate runtime state (including Round Robin rotation)
    */
   async simulateRouting(
     request: Omit<ConfigRouteRequest, 'resolvedConfig' | 'runtimeState'>,
@@ -250,13 +258,42 @@ export class QuotaWeaveCore {
     if (!this.resolvedRoutingConfig) {
       throw new Error('No routing configuration loaded. Load configuration before simulating.');
     }
-    return Promise.resolve(
-      this.configRoutingEngine.route({
-        ...request,
-        resolvedConfig: this.resolvedRoutingConfig,
-        runtimeState: runtimeState ?? this.routingRuntimeState,
-      }),
+    // Use simulate method which doesn't mutate state
+    // Convert to SimulationRequest format (omit resolvedConfig, runtimeState, context)
+    const { context: _context, ...simRequest } = request;
+    const simResult = this.configRoutingEngine.simulate(
+      simRequest,
+      this.resolvedRoutingConfig,
+      runtimeState ?? this.routingRuntimeState,
     );
+    // Convert SimulationResult to ConfigRouteResult for backward compatibility
+    const selectedModel = simResult.selectedModel
+      ? modelToCandidate({ model: simResult.selectedModel.model })
+      : null;
+    const alternatives = simResult.candidates
+      .filter((c) => !c.excluded && c.model.id !== simResult.selectedModel?.model.id)
+      .slice(0, 3)
+      .map((c) => modelToCandidate({ model: c.model }));
+    return Promise.resolve({
+      selectedModel,
+      alternatives,
+      reason: selectedModel
+        ? `Simulation selected ${selectedModel.id}`
+        : 'No model selected in simulation',
+      confidence: simResult.selectedModel ? simResult.selectedModel.scoreBreakdown.totalScore : 0,
+      rejectionReasons: Object.fromEntries(
+        simResult.candidates
+          .filter((c) => c.excluded && c.exclusionReasons.length > 0)
+          .map((c) => [c.model.id, c.exclusionReasons]),
+      ),
+      metadata: {
+        decisionTimeMs: simResult.metadata.decisionTimeMs,
+        strategy: simResult.metadata.strategy,
+        category: simResult.category,
+        candidatesEvaluated: simResult.candidates.length,
+        requestId: simResult.metadata.requestId,
+      },
+    });
   }
 
   /**

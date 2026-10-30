@@ -13,6 +13,7 @@ import { getCandidatesForCategory } from './config-get-candidates-for-category.j
 import { getEmptyRuntimeState } from './config-get-empty-runtime-state.js';
 import { resolveCategoryWithHeuristic } from './config-resolve-category-with-heuristic.js';
 import { scoreCandidatesForSimulation } from './config-score-candidates-for-simulation.js';
+import { selectRoundRobinCandidate, snapshotRoundRobinState } from './config-round-robin.js';
 import type {
   CostPolicyConfig,
   ModelConfig,
@@ -92,8 +93,13 @@ function prepareSimulationCandidates({
   const costPolicy = request.costPolicy
     ? { ...resolvedConfig.costPolicy, ...request.costPolicy }
     : resolvedConfig.costPolicy;
-  // Build runtime state for simulation
+  // Build runtime state for simulation (use snapshot of Round Robin state, don't mutate)
+  const roundRobinSnapshot = snapshotRoundRobinState(runtimeState);
   const simRuntimeState = runtimeState ?? getEmptyRuntimeState();
+  // Restore Round Robin snapshot for deterministic simulation
+  if (roundRobinSnapshot) {
+    simRuntimeState.roundRobinState = { ...roundRobinSnapshot };
+  }
   // Score all candidates
   const scoredCandidates = scoreCandidatesForSimulation({
     resolvedConfig: resolvedConfig,
@@ -116,7 +122,12 @@ function buildSimulationResult({
   startTime,
   heuristicCategory,
 }: BuildSimulationResultArgs) {
-  const bestCandidate = scoredCandidates.find((c) => !c.excluded);
+  const bestCandidate = selectSimulationBestCandidate(
+    scoredCandidates,
+    category,
+    resolvedConfig,
+    simRuntimeState,
+  );
   // Build active cooldowns
   const activeCooldowns = getActiveCooldowns({
     runtimeState: simRuntimeState,
@@ -126,6 +137,54 @@ function buildSimulationResult({
   const rejectionReason = permitted ? '' : 'All candidates excluded by policy';
   // Convert internal ScoreBreakdown to simulation format (with totalScore)
   const toSimulationBreakdown = createSimulationBreakdown(resolvedConfig, category);
+  return buildSimulationResultObject({
+    scoredCandidates,
+    bestCandidate,
+    category,
+    costPolicy,
+    activeCooldowns,
+    permitted,
+    rejectionReason,
+    toSimulationBreakdown,
+    requestId,
+    startTime,
+    heuristicCategory,
+    resolvedConfig,
+  });
+}
+function selectSimulationBestCandidate(
+  scoredCandidates: ScoredCandidate[],
+  category: RoutingCategoryConfig,
+  resolvedConfig: ResolvedRoutingConfig,
+  simRuntimeState: RoutingRuntimeState,
+): ScoredCandidate | undefined {
+  const strategy = category.defaultStrategy ?? resolvedConfig.defaultStrategy;
+  if (strategy === 'round-robin') {
+    // Use Round Robin selection for simulation (with snapshot state, no mutation)
+    const roundRobinResult = selectRoundRobinCandidate({
+      scoredCandidates,
+      runtimeState: simRuntimeState,
+      category,
+    });
+    return roundRobinResult.bestCandidate ?? undefined;
+  }
+  // Use score-based selection (first non-excluded after sorting by score)
+  return scoredCandidates.find((c) => !c.excluded);
+}
+function buildSimulationResultObject({
+  scoredCandidates,
+  bestCandidate,
+  category,
+  costPolicy,
+  activeCooldowns,
+  permitted,
+  rejectionReason,
+  toSimulationBreakdown,
+  requestId,
+  startTime,
+  heuristicCategory,
+  resolvedConfig,
+}: BuildSimulationResultObjectArgs): SimulationResult {
   return {
     category: category.id,
     candidates: scoredCandidates.map((c) => ({
@@ -155,6 +214,20 @@ function buildSimulationResult({
     },
   };
 }
+type BuildSimulationResultObjectArgs = {
+  scoredCandidates: ScoredCandidate[];
+  bestCandidate: ScoredCandidate | undefined;
+  category: RoutingCategoryConfig;
+  costPolicy: CostPolicyConfig;
+  activeCooldowns: Awaited<ReturnType<typeof getActiveCooldowns>>;
+  permitted: boolean;
+  rejectionReason: string;
+  toSimulationBreakdown: ReturnType<typeof createSimulationBreakdown>;
+  requestId: string;
+  startTime: number;
+  heuristicCategory: boolean;
+  resolvedConfig: ResolvedRoutingConfig;
+};
 type BuildSimulationResultArgs = {
   scoredCandidates: ScoredCandidate[];
   resolvedConfig: ResolvedRoutingConfig;

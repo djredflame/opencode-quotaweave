@@ -44,7 +44,7 @@ function itShouldSelectBestMatchingModelForGeneral3() {
     task: 'Implement a REST API',
     requiredCapabilities: ['coding'],
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   expect(result.selectedModel).not.toBeNull();
   expect(result.selectedModel?.capabilities).toContain('coding');
   expect(result.confidence).toBeGreaterThan(0);
@@ -55,7 +55,7 @@ function itShouldUseExplicitCategoryWhenProvided4() {
     category: 'coding',
     requiredCapabilities: ['coding'],
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   expect(result.selectedModel).not.toBeNull();
   expect(result.metadata.category).toBe('coding');
 }
@@ -63,7 +63,7 @@ function itShouldRejectWhenCategoryNotFound5() {
   const request = createRequest({
     category: 'nonexistent',
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   expect(result.selectedModel).toBeNull();
   expect(result.confidence).toBe(0);
   expect(result.metadata.noCategory).toBe(true);
@@ -73,7 +73,7 @@ function itShouldFilterByExcludedProviders6() {
     excludedProviders: ['test'],
     requiredCapabilities: ['coding'],
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   expect(result.selectedModel?.provider).toBe('other');
   expect(result.selectedModel?.id).toBe('test/fast-model');
 }
@@ -82,7 +82,7 @@ function itShouldFilterByPreferredProviders7() {
     preferredProviders: ['other'],
     requiredCapabilities: ['coding'],
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   expect(result.selectedModel?.provider).toBe('other');
 }
 function itShouldFilterByMaxCost8() {
@@ -90,7 +90,7 @@ function itShouldFilterByMaxCost8() {
     maxCost: 0.001, // Very low, only free model should pass
     requiredCapabilities: ['coding'],
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   expect(result.selectedModel?.id).toBe('test/free-model');
 }
 function itShouldFilterByMaxLatency9() {
@@ -98,14 +98,14 @@ function itShouldFilterByMaxLatency9() {
     maxLatencyMs: 300, // Only fast-model should pass
     requiredCapabilities: ['coding'],
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   expect(result.selectedModel?.id).toBe('test/fast-model');
 }
 function itShouldFilterByRequiredCapabilities10() {
   const request = createRequest({
     requiredCapabilities: ['analysis'], // Only paid-model has this
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   expect(result.selectedModel?.id).toBe('test/paid-model');
 }
 function itShouldRespectFreeOnlyCostPolicy11() {
@@ -117,7 +117,7 @@ function itShouldRespectFreeOnlyCostPolicy11() {
     requiredCapabilities: ['coding'],
     resolvedConfig: freeOnlyConfig,
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   expect(result.selectedModel?.id).toBe('test/free-model');
   expect(result.rejectionReasons['test/paid-model']).toContain(
     'Model is paid but free-only mode is enabled',
@@ -127,7 +127,7 @@ function itShouldRejectDisabledModels12() {
   const request = createRequest({
     requiredCapabilities: ['coding'],
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   // disabled-model should not be selected
   expect(result.selectedModel?.id).not.toBe('test/disabled-model');
   // It should be in rejection reasons
@@ -138,7 +138,7 @@ function itShouldReturnRejectionReasonsForAllExcluded13() {
     excludedProviders: ['test'],
     requiredCapabilities: ['coding'],
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   // Only models in the category are considered for routing
   expect(result.rejectionReasons['test/free-model']).toContain('Provider test is excluded');
   expect(result.rejectionReasons['test/paid-model']).toContain('Provider test is excluded');
@@ -150,7 +150,7 @@ function itShouldReturnNoMatchWhenAllModels14() {
     excludedProviders: ['test', 'other'],
     requiredCapabilities: ['coding'],
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   expect(result.selectedModel).toBeNull();
   expect(result.metadata.noMatch).toBe(true);
   expect(Object.keys(result.rejectionReasons).length).toBeGreaterThan(0);
@@ -160,7 +160,7 @@ function itShouldUseDefaultCategoryWhenNoneSpecified15() {
   // Use type-safe property deletion
   const { category, ...requestWithoutCategory } = request;
   void category; // Suppress unused warning
-  const result = engine.route(requestWithoutCategory);
+  const { result } = engine.route(requestWithoutCategory);
   expect(result.metadata.category).toBe('general');
 }
 function itShouldFallBackToFirstEnabledCategory16() {
@@ -175,7 +175,7 @@ function itShouldFallBackToFirstEnabledCategory16() {
   const request = createRequest({
     resolvedConfig: configWithDisabledDefault,
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   expect(result.metadata.category).toBe('coding');
 }
 function describeRoute2() {

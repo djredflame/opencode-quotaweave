@@ -155,7 +155,7 @@ function itShouldNeverSelectADisabledModel12() {
   const request = createRequest({
     requiredCapabilities: ['coding'],
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   // Even if disabled model has highest priority, it should not be selected
   expect(result.selectedModel?.id).not.toBe('test/disabled-model');
 }
@@ -163,7 +163,7 @@ function itShouldNeverSelectModelNotInAllowlist13() {
   const request = createRequest({
     requiredCapabilities: ['coding'],
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   // Only models from the category's modelIds should be considered
   expect(['test/free-model', 'test/paid-model', 'test/fast-model']).toContain(
     result.selectedModel?.id,
@@ -174,7 +174,7 @@ function itShouldFailClosedWhenNoPermittedModel14() {
     excludedProviders: ['test', 'other'],
     requiredCapabilities: ['coding'],
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   expect(result.selectedModel).toBeNull();
   expect(result.confidence).toBe(0);
 }
@@ -187,7 +187,7 @@ function itShouldEnforceFreeOnlyModeStrictly15() {
     requiredCapabilities: ['analysis'], // Only paid-model has this
     resolvedConfig: freeOnlyConfig,
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   // Should not select paid model even though it's the only one with 'analysis' capability
   expect(result.selectedModel).toBeNull();
   expect(result.metadata.noMatch).toBe(true);
@@ -196,7 +196,7 @@ function itShouldNotSilentlyFallbackToUnapprovedModel16() {
   const request = createRequest({
     requiredCapabilities: ['nonexistent-capability'],
   });
-  const result = engine.route(request);
+  const { result } = engine.route(request);
   expect(result.selectedModel).toBeNull();
   expect(result.metadata.noMatch).toBe(true);
   // No fallback to any model
