@@ -58,6 +58,13 @@ export const STRATEGY_WEIGHTS: Record<RoutingStrategyType, Record<StrategyWeight
     quotaScore: 0.2,
     priorityScore: 0.2,
   },
+  weighted: {
+    capabilityMatch: 0.2,
+    costScore: 0.2,
+    latencyScore: 0.2,
+    quotaScore: 0.2,
+    priorityScore: 0.2,
+  },
   custom: {
     capabilityMatch: 0.3,
     costScore: 0.2,

@@ -128,6 +128,7 @@ function validateModelOptions(
       value: m.estimatedLatencyMs,
     });
   }
+  validateModelWeight(m, errors, modelPath);
   if (m.fallbacks === undefined) return;
   if (!Array.isArray(m.fallbacks)) {
     errors.push({
@@ -147,5 +148,22 @@ function validateModelOptions(
         value: m.fallbacks[j],
       });
     }
+  }
+}
+function validateModelWeight(
+  m: Record<string, unknown>,
+  errors: ConfigValidationError[],
+  modelPath: string,
+): void {
+  if (
+    m.weight !== undefined &&
+    (typeof m.weight !== 'number' || !Number.isFinite(m.weight) || m.weight < 0)
+  ) {
+    errors.push({
+      code: 'INVALID_WEIGHT',
+      message: 'weight must be a finite non-negative number',
+      path: `${modelPath}.weight`,
+      value: m.weight,
+    });
   }
 }

@@ -68,6 +68,11 @@
             "items": { "type": "string" },
             "description": "Ordered fallback model IDs"
           },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Model selection weight for weighted routing (default: 1.0)"
+          },
           "metadata": {
             "type": "object",
             "description": "Model metadata"
@@ -113,6 +118,7 @@
               "quota-aware",
               "priority-based",
               "round-robin",
+              "weighted",
               "custom"
             ],
             "description": "Default routing strategy for this category"
@@ -127,6 +133,7 @@
               "quota-aware": { "type": "number", "minimum": 0, "maximum": 1 },
               "priority-based": { "type": "number", "minimum": 0, "maximum": 1 },
               "round-robin": { "type": "number", "minimum": 0, "maximum": 1 },
+              "weighted": { "type": "number", "minimum": 0, "maximum": 1 },
               "custom": { "type": "number", "minimum": 0, "maximum": 1 }
             },
             "additionalProperties": false
@@ -158,6 +165,7 @@
         "quota-aware",
         "priority-based",
         "round-robin",
+        "weighted",
         "custom"
       ],
       "description": "Default routing strategy (used when category doesn't specify)"
@@ -172,6 +180,7 @@
         "quota-aware",
         "priority-based",
         "round-robin",
+        "weighted",
         "custom"
       ],
       "properties": {
@@ -181,6 +190,7 @@
         "quota-aware": { "type": "number", "minimum": 0, "maximum": 1 },
         "priority-based": { "type": "number", "minimum": 0, "maximum": 1 },
         "round-robin": { "type": "number", "minimum": 0, "maximum": 1 },
+        "weighted": { "type": "number", "minimum": 0, "maximum": 1 },
         "custom": { "type": "number", "minimum": 0, "maximum": 1 }
       },
       "additionalProperties": false

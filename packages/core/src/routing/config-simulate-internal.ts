@@ -14,6 +14,7 @@ import { getEmptyRuntimeState } from './config-get-empty-runtime-state.js';
 import { resolveCategoryWithHeuristic } from './config-resolve-category-with-heuristic.js';
 import { scoreCandidatesForSimulation } from './config-score-candidates-for-simulation.js';
 import { selectRoundRobinCandidate, snapshotRoundRobinState } from './config-round-robin.js';
+import { selectWeightedCandidate, snapshotWeightedState } from './config-weighted.js';
 import type {
   CostPolicyConfig,
   ModelConfig,
@@ -93,12 +94,18 @@ function prepareSimulationCandidates({
   const costPolicy = request.costPolicy
     ? { ...resolvedConfig.costPolicy, ...request.costPolicy }
     : resolvedConfig.costPolicy;
-  // Build runtime state for simulation (use snapshot of Round Robin state, don't mutate)
+  // Build runtime state for simulation (use snapshot of Round Robin and Weighted state, don't mutate)
   const roundRobinSnapshot = snapshotRoundRobinState(runtimeState);
-  const simRuntimeState = runtimeState ?? getEmptyRuntimeState();
+  const weightedSnapshot = snapshotWeightedState(runtimeState);
+  // Shallow copy so snapshot restoration never mutates the caller's runtime state
+  const simRuntimeState: RoutingRuntimeState = { ...(runtimeState ?? getEmptyRuntimeState()) };
   // Restore Round Robin snapshot for deterministic simulation
   if (roundRobinSnapshot) {
     simRuntimeState.roundRobinState = { ...roundRobinSnapshot };
+  }
+  // Restore Weighted snapshot for deterministic simulation
+  if (weightedSnapshot) {
+    simRuntimeState.weightedState = { ...weightedSnapshot };
   }
   // Score all candidates
   const scoredCandidates = scoreCandidatesForSimulation({
@@ -167,6 +174,15 @@ function selectSimulationBestCandidate(
       category,
     });
     return roundRobinResult.bestCandidate ?? undefined;
+  }
+  if (strategy === 'weighted') {
+    // Use Weighted selection for simulation (with snapshot state, no mutation)
+    const weightedResult = selectWeightedCandidate({
+      scoredCandidates,
+      runtimeState: simRuntimeState,
+      category,
+    });
+    return weightedResult.bestCandidate ?? undefined;
   }
   // Use score-based selection (first non-excluded after sorting by score)
   return scoredCandidates.find((c) => !c.excluded);

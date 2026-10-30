@@ -140,6 +140,7 @@ type ApplyProjectDefaultsArgs = {
     'quota-aware': number;
     'priority-based': number;
     'round-robin': number;
+    weighted: number;
     custom: number;
   };
   costPolicy: {

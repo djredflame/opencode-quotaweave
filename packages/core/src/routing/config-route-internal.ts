@@ -13,6 +13,7 @@ import { modelToCandidate } from './config-model-to-candidate.js';
 import { resolveCategory } from './config-resolve-category.js';
 import { scoreCandidates } from './config-score-candidates.js';
 import { selectRoundRobinCandidate } from './config-round-robin.js';
+import { selectWeightedCandidate } from './config-weighted.js';
 import type {
   ConfigRouteRequest,
   ConfigRouteResult,
@@ -130,6 +131,14 @@ function selectBestCandidate(
   if (strategy === 'round-robin') {
     // Use Round Robin selection
     return selectRoundRobinCandidate({
+      scoredCandidates,
+      runtimeState,
+      category,
+    });
+  }
+  if (strategy === 'weighted') {
+    // Use Weighted selection (Smooth Weighted Round Robin)
+    return selectWeightedCandidate({
       scoredCandidates,
       runtimeState,
       category,
