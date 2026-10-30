@@ -92,6 +92,7 @@ const WEIGHT_LABELS: Readonly<Record<string, string>> = {
   'quota-aware': 'quota',
   'priority-based': 'priority',
   'round-robin': 'round',
+  weighted: 'weight',
   custom: 'custom',
 };
 

@@ -14,6 +14,7 @@ export function isValidStrategy(value: unknown): value is RoutingStrategyType {
       'quota-aware',
       'priority-based',
       'round-robin',
+      'weighted',
       'custom',
     ].includes(value)
   );

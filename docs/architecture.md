@@ -121,7 +121,9 @@ Configured routing uses fixed scoring profiles.
 
 Important limitations:
 
-- Configured `round-robin` does not rotate models.
+- Configured `round-robin` rotates eligible candidates deterministically.
+- Configured `weighted` uses Smooth Weighted Round Robin with per-model `weight` (default `1.0`; zero-weight models are never selected).
+- Rotation and weighting state is runtime-only, isolated per category and router instance, and resets when the eligible candidate set or configured model weights change.
 - Configured `custom` scoring currently uses fixed factors.
 - Some configured strategy-weight keys do not match the score-factor keys consumed by the scorer.
 - The configured quota score is currently a constant placeholder.

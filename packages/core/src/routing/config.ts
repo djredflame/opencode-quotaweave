@@ -60,6 +60,7 @@ export type RoutingStrategyType =
   | 'quota-aware'
   | 'priority-based'
   | 'round-robin'
+  | 'weighted'
   | 'custom';
 /**
  * Model cost classification
@@ -89,6 +90,8 @@ export interface ModelConfig {
   enabled: boolean;
   /** Ordered fallback model IDs (used when this model is unavailable) */
   fallbacks?: string[];
+  /** Model selection weight for weighted routing (default: 1.0, must be >= 0) */
+  weight?: number;
   /** Model metadata */
   metadata?: Record<string, unknown>;
 }
@@ -451,6 +454,21 @@ export interface RoundRobinCategoryState {
 }
 
 /**
+ * Weighted routing state for a specific category
+ * Uses Smooth Weighted Round Robin algorithm
+ */
+export interface WeightedCategoryState {
+  /** Current weight for each model (used by SWRR algorithm) */
+  currentWeights: Record<string, number>;
+  /** Ordered list of eligible model IDs at the time of last selection */
+  eligibleModelIds: string[];
+  /** Configured weights used to accumulate currentWeights (absent in legacy state) */
+  weights?: Record<string, number>;
+  /** Timestamp of last update */
+  lastUpdated: number;
+}
+
+/**
  * Runtime state (separate from user configuration)
  */
 export interface RoutingRuntimeState {
@@ -464,6 +482,8 @@ export interface RoutingRuntimeState {
   healthStats?: Record<string, HealthStat>;
   /** Round Robin rotation state per category */
   roundRobinState?: Record<string, RoundRobinCategoryState>;
+  /** Weighted routing state per category */
+  weightedState?: Record<string, WeightedCategoryState>;
   /** Last updated timestamp */
   lastUpdated: number;
 }

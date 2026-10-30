@@ -48,6 +48,7 @@ export const DEFAULT_STRATEGY_WEIGHTS = {
   'quota-aware': 0.1,
   'priority-based': 0.2,
   'round-robin': 0.0,
+  weighted: 0.0,
   custom: 0.0,
 } as const satisfies Record<RoutingStrategyType, number>;
 export function createDefaultGlobalConfig(): GlobalRoutingConfig {

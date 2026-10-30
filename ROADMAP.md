@@ -126,7 +126,7 @@ The following are not implemented as complete end-user integrations in v0.1.0:
 - Persistent workflow history.
 - Complete session-level spending enforcement.
 
-Configured strategy names do not necessarily imply fully implemented scheduling behavior. For example, configured round-robin routing currently does not rotate candidates.
+Configured strategy names do not necessarily imply fully implemented scheduling behavior. Round-robin rotation and weighted model selection are implemented in core, while configurable score-factor weighting and several enforcement paths remain incomplete.
 
 Project-specific configuration overrides also require additional enforcement work before they can be treated as a strict security boundary.
 

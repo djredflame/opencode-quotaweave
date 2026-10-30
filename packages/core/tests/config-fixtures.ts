@@ -78,6 +78,7 @@ export const CATEGORY_FIXTURES: RoutingCategoryConfig[] = [
       'quota-aware': 0.1,
       'priority-based': 0.1,
       'round-robin': 0.0,
+      weighted: 0.0,
       custom: 0.0,
     },
     enabled: true,
@@ -107,6 +108,7 @@ export function buildTestResolvedConfig(
       'quota-aware': 0.1,
       'priority-based': 0.2,
       'round-robin': 0.0,
+      weighted: 0.0,
       custom: 0.0,
     },
     costPolicy: {
@@ -194,6 +196,7 @@ export const GLOBAL_CONFIG_FIXTURE: GlobalRoutingConfig = {
     'quota-aware': 0.1,
     'priority-based': 0.2,
     'round-robin': 0.0,
+    weighted: 0.0,
     custom: 0.0,
   },
   costPolicy: {

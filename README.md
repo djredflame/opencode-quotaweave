@@ -302,7 +302,7 @@ Current limitations include:
 - No verified standalone MCP CLI bootstrap.
 - Native OpenCode and MCP host compatibility still requires manual verification.
 
-Some configurable strategies and constraints are not fully implemented. These include round-robin rotation, configurable score weighting, total-request cost enforcement, and restrictive-only project overrides.
+Round-robin rotation and weighted model selection are implemented in the core routing engine. Other configurable strategies and constraints are not fully implemented, including configurable score weighting, total-request cost enforcement, and restrictive-only project overrides.
 
 Simulation is an explanation of configured decisions, not proof of provider access or successful execution.
 
