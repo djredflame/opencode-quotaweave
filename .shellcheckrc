@@ -1,0 +1,11 @@
+# ShellCheck configuration for opencode-quotaweave
+# https://github.com/koalaman/shellcheck/wiki/Configuration
+
+# Exclude specific warnings
+# SC1091: Not following sourced files - we use absolute paths
+# SC2310: Function invoked in condition - handled properly
+# SC2312: Masking return values - acceptable for these scripts
+exclude=SC1091,SC2310,SC2312
+
+# Enable all other checks
+enable=all

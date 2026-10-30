@@ -1,0 +1,14 @@
+# shfmt configuration for opencode-quotaweave
+# https://github.com/mvdan/sh
+
+# Use 2 spaces for indentation
+-i 2
+
+# Case statements use 2 spaces
+-ci
+
+# Switch cases indent
+-sr
+
+# Keep column width reasonable
+-cn

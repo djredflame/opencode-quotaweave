@@ -1,0 +1,188 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode/nemotron-3-ultra-free",
+  "mcp": {
+    "codegraph": {
+      "type": "local",
+      "command": ["codegraph", "serve", "--mcp", "--path", "."],
+      "enabled": true
+    },
+    "serena": {
+      "type": "local",
+      "command": ["serena", "start-mcp-server"],
+      "enabled": true
+    }
+  },
+  "permissions": [
+    {
+      "action": "external_directory",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "*",
+      "effect": "allow"
+    },
+    {
+      "action": "read",
+      "resource": "**/.git/**",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "**/.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "**/.ssh/**",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "**/.aws/**",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "**/*.pem",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "**/*.key",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "**/dev.route.json",
+      "effect": "deny"
+    },
+    {
+      "action": "read",
+      "resource": "**/*.local.*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "*",
+      "effect": "allow"
+    },
+    {
+      "action": "edit",
+      "resource": "**/.git/**",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "**/.env*",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "**/.ssh/**",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "**/.aws/**",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "**/*.pem",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "**/*.key",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "**/dev.route.json",
+      "effect": "deny"
+    },
+    {
+      "action": "edit",
+      "resource": "**/*.local.*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "*",
+      "effect": "ask"
+    },
+    {
+      "action": "shell",
+      "resource": "git *",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "git status",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "git status --short",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "git ls-files --others --exclude-standard",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "git ls-files --cached",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "git check-ignore -v --no-index .codegraph/",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "git check-ignore -v --no-index .serena/",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "git check-ignore -v --no-index .pnpmrc",
+      "effect": "allow"
+    },
+    {
+      "action": "shell",
+      "resource": "gh *",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "sudo *",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "npm publish*",
+      "effect": "deny"
+    },
+    {
+      "action": "shell",
+      "resource": "pnpm publish*",
+      "effect": "deny"
+    },
+    {
+      "action": "webfetch",
+      "resource": "*",
+      "effect": "deny"
+    },
+    {
+      "action": "websearch",
+      "resource": "*",
+      "effect": "deny"
+    }
+  ]
+}

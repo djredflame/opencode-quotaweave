@@ -1,0 +1,86 @@
+{
+  "version": "1.0.0",
+  "models": [
+    {
+      "id": "test/model-1",
+      "provider": "test",
+      "displayName": "Test Model 1",
+      "capabilities": ["coding", "reasoning"],
+      "priority": 100,
+      "costClassification": "free",
+      "estimatedCostPer1kTokens": 0,
+      "estimatedLatencyMs": 500,
+      "enabled": true,
+      "fallbacks": []
+    },
+    {
+      "id": "test/model-2",
+      "provider": "test",
+      "displayName": "Test Model 2",
+      "capabilities": ["writing", "analysis"],
+      "priority": 80,
+      "costClassification": "paid",
+      "estimatedCostPer1kTokens": 0.003,
+      "estimatedLatencyMs": 800,
+      "enabled": true,
+      "fallbacks": ["test/model-1"]
+    }
+  ],
+  "categories": [
+    {
+      "id": "general",
+      "name": "General Purpose",
+      "description": "General purpose tasks",
+      "modelIds": ["test/model-1", "test/model-2"],
+      "defaultStrategy": "capability-match",
+      "enabled": true
+    },
+    {
+      "id": "coding",
+      "name": "Coding",
+      "description": "Coding tasks",
+      "modelIds": ["test/model-1"],
+      "defaultStrategy": "capability-match",
+      "enabled": true
+    }
+  ],
+  "defaultCategory": "general",
+  "defaultStrategy": "capability-match",
+  "strategyWeights": {
+    "capability-match": 0.5,
+    "cost-optimize": 0.1,
+    "latency-optimize": 0.1,
+    "quota-aware": 0.1,
+    "priority-based": 0.2,
+    "round-robin": 0.0,
+    "custom": 0.0
+  },
+  "costPolicy": {
+    "freeOnly": false,
+    "maxCostPerRequest": 0.5,
+    "maxCostPerSession": 10.0,
+    "warnThreshold": 0.8,
+    "budgetPeriodHours": 24
+  },
+  "cooldownConfig": {
+    "enabled": true,
+    "defaultCooldownMs": 60000,
+    "maxCooldownMs": 3600000,
+    "backoffMultiplier": 2.0,
+    "resetOnSuccess": true
+  },
+  "shadowMode": {
+    "enabled": false,
+    "logDecisions": true,
+    "sampleRate": 0.1
+  },
+  "multiAgent": {
+    "mode": "manual",
+    "requirePreview": true,
+    "stopOnModelFailure": true,
+    "noParallelFsWrites": true,
+    "enforceAllowlists": true,
+    "previewNoQuotaConsumption": true,
+    "enforceGuards": true
+  }
+}

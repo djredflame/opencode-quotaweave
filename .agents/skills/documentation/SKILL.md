@@ -1,0 +1,24 @@
+---
+name: documentation
+description: Write or update QuotaWeave public Markdown, README, roadmap, configuration examples and contributor guides when behavior or public claims change.
+---
+
+# Documentation Skill
+
+Read AGENTS.md first. Use this canonical skill for documentation work in OpenCode, Claude Code and Codex; keep the existing shared discovery architecture. Stay within the authorized edit scope and read-only Git rules.
+
+Verify technical claims against source code, tests and actual runtime behavior when available. Treat source code, manifests, validators, examples and verified behavior as truth. Inspect only the files needed to support changed claims. Previous reports, comments, configuration fields and passing unit tests alone do not prove runtime behavior. Label capabilities as implemented, planned or unverified; distinguish tested domain primitives from native OpenCode/MCP integration. Never imply automatic live quota, price or availability retrieval without an implemented and verified path.
+
+Never invent features, commands, benchmarks, test results or security guarantees. Mark uncertain behavior as unverified instead of presenting assumptions as facts. Never claim documentation was fully human-reviewed unless that review is verified. Preserve the README's Documentation Transparency statement, including AI assistance, review limits and the precedence of source code and verified runtime behavior.
+
+Keep README.md a welcoming product landing page: identity and tagline; accessible agentic coding with free and affordable models; problem and long-term vision; implemented v0.1.0 capabilities; OpenCode TUI, simulation and MCP diagnostics; realistic installation/configuration; current limitations; roadmap, contributing, security and license. Lead with useful behavior and plain language. Link to detailed technical guides instead of filling the README with internal infrastructure, audit history or exhaustive implementation findings.
+
+Use the branding “Built with AI-assisted development, designed for OpenCode.” Acknowledge OpenCode, Claude Code and OpenAI Codex as development tools, with the human maintainer controlling direction and releases. Preserve the roadmap's complete vision while separating existing policy/quota/workflow primitives from planned Decision Models, model pools, active routing, Quota Brain, controlled recovery, Agent Mesh, multi-model workflows and MCP/efficiency extensions. Do not promise delivery dates, releases, support periods or response SLAs.
+
+Verify commands against the correct manifest and inspect transitive effects before running them. Check paths, package exports, configuration precedence, JSON examples and relative links/anchors against current files. Present examples as examples, with valid structure and clearly identified sample values. Do not invent repository URLs, released versions, scripts, tools or installation guarantees. Keep release preparation aligned with actual Git state; the maintainer performs all versioning and publication.
+
+Never invent email addresses or contacts. Replace fake/placeholder contact addresses with private contact through the maintainer's GitHub profile; offer GitHub private vulnerability reporting only when enabled. Keep vulnerability details out of public issues. Do not open dev.route.json, credentials, private configuration or local Serena memories, or include secrets, machine-specific paths and private report content in public documentation. Describe permissions and scanners as tested guardrails, without unsupported sandbox claims.
+
+Maintain one canonical source per topic: README for the public introduction, ROADMAP for future direction, architecture/testing guides for implementation and validation boundaries, SECURITY for disclosure, CONTRIBUTING for contribution/release preparation, and the infrastructure guide for assistant integration. Link elsewhere rather than duplicating procedures. Update affected documentation when behavior changes and remove stale references; mark retained reports as historical rather than treating them as current evidence. Preserve unique valid content when consolidating.
+
+For Markdown-only edits, format an explicit public Markdown file list with the installed Prettier CLI; do not sweep private files or reformat code/configuration. Check relative links/anchors, changed commands/examples and contact claims. Run existing agent validation when instructions/skills change, noting any hard-coded skill coverage gaps. Validate the new skill's frontmatter and shared references separately when necessary. Do not rerun the whole application suite unless a changed claim or behavior requires it; never weaken checks. Report changed files, focused results and remaining limitations briefly. Do not create another audit report unless requested.

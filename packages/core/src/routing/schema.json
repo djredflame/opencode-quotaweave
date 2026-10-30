@@ -1,0 +1,347 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://opencode-quotaweave.dev/schemas/routing-config-1.0.0.json",
+  "title": "QuotaWeave Routing Configuration",
+  "description": "User-controlled model routing configuration for QuotaWeave. The global configuration is authoritative; project configurations may only restrict it.",
+  "version": "1.0.0",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Configuration schema version"
+    },
+    "models": {
+      "type": "array",
+      "description": "Global model allowlist - authoritative source of allowed models",
+      "items": {
+        "type": "object",
+        "required": ["id", "provider", "capabilities", "priority", "costClassification", "enabled"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Unique model identifier (must match OpenCode provider model ID)"
+          },
+          "provider": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Provider name (e.g., 'anthropic', 'openai', 'google', 'openrouter')"
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Human-readable display name"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "description": "Model capabilities/tags for routing"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Model priority (higher = more preferred)"
+          },
+          "costClassification": {
+            "type": "string",
+            "enum": ["free", "paid", "unknown"],
+            "description": "Cost classification"
+          },
+          "estimatedCostPer1kTokens": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Estimated cost per 1k tokens (USD)"
+          },
+          "estimatedLatencyMs": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Estimated latency in ms"
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether this model is enabled"
+          },
+          "fallbacks": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Ordered fallback model IDs"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Model metadata"
+          }
+        },
+        "additionalProperties": false
+      },
+      "uniqueItems": true
+    },
+    "categories": {
+      "type": "array",
+      "description": "Routing categories",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "modelIds", "enabled"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Category identifier"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Human-readable name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of when to use this category"
+          },
+          "modelIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "description": "Model IDs that belong to this category (subset of global allowlist)"
+          },
+          "defaultStrategy": {
+            "type": "string",
+            "enum": [
+              "capability-match",
+              "cost-optimize",
+              "latency-optimize",
+              "quota-aware",
+              "priority-based",
+              "round-robin",
+              "custom"
+            ],
+            "description": "Default routing strategy for this category"
+          },
+          "strategyWeights": {
+            "type": "object",
+            "description": "Category-specific strategy weights (override global)",
+            "properties": {
+              "capability-match": { "type": "number", "minimum": 0, "maximum": 1 },
+              "cost-optimize": { "type": "number", "minimum": 0, "maximum": 1 },
+              "latency-optimize": { "type": "number", "minimum": 0, "maximum": 1 },
+              "quota-aware": { "type": "number", "minimum": 0, "maximum": 1 },
+              "priority-based": { "type": "number", "minimum": 0, "maximum": 1 },
+              "round-robin": { "type": "number", "minimum": 0, "maximum": 1 },
+              "custom": { "type": "number", "minimum": 0, "maximum": 1 }
+            },
+            "additionalProperties": false
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether this category is enabled"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Category metadata"
+          }
+        },
+        "additionalProperties": false
+      },
+      "uniqueItems": true
+    },
+    "defaultCategory": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Default routing category"
+    },
+    "defaultStrategy": {
+      "type": "string",
+      "enum": [
+        "capability-match",
+        "cost-optimize",
+        "latency-optimize",
+        "quota-aware",
+        "priority-based",
+        "round-robin",
+        "custom"
+      ],
+      "description": "Default routing strategy (used when category doesn't specify)"
+    },
+    "strategyWeights": {
+      "type": "object",
+      "description": "Global strategy weights",
+      "required": [
+        "capability-match",
+        "cost-optimize",
+        "latency-optimize",
+        "quota-aware",
+        "priority-based",
+        "round-robin",
+        "custom"
+      ],
+      "properties": {
+        "capability-match": { "type": "number", "minimum": 0, "maximum": 1 },
+        "cost-optimize": { "type": "number", "minimum": 0, "maximum": 1 },
+        "latency-optimize": { "type": "number", "minimum": 0, "maximum": 1 },
+        "quota-aware": { "type": "number", "minimum": 0, "maximum": 1 },
+        "priority-based": { "type": "number", "minimum": 0, "maximum": 1 },
+        "round-robin": { "type": "number", "minimum": 0, "maximum": 1 },
+        "custom": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "costPolicy": {
+      "type": "object",
+      "description": "Cost policy configuration",
+      "required": ["freeOnly"],
+      "properties": {
+        "freeOnly": {
+          "type": "boolean",
+          "description": "Enforce free-only mode (never select paid or unknown models)"
+        },
+        "maxCostPerRequest": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maximum cost per request (USD)"
+        },
+        "maxCostPerSession": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maximum cost per session (USD)"
+        },
+        "warnThreshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Warn when cost exceeds threshold (0-1)"
+        },
+        "budgetPeriodHours": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Budget period in hours"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cooldownConfig": {
+      "type": "object",
+      "description": "Cooldown configuration",
+      "required": [
+        "enabled",
+        "defaultCooldownMs",
+        "maxCooldownMs",
+        "backoffMultiplier",
+        "resetOnSuccess"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable cooldown tracking"
+        },
+        "defaultCooldownMs": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Default cooldown duration in ms after model error"
+        },
+        "maxCooldownMs": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Maximum cooldown duration in ms"
+        },
+        "backoffMultiplier": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Cooldown multiplier for repeated failures"
+        },
+        "resetOnSuccess": {
+          "type": "boolean",
+          "description": "Reset cooldown on successful request"
+        }
+      },
+      "additionalProperties": false
+    },
+    "shadowMode": {
+      "type": "object",
+      "description": "Shadow mode configuration",
+      "required": ["enabled", "logDecisions", "sampleRate"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable shadow mode"
+        },
+        "shadowModelIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Shadow mode model IDs to compare against"
+        },
+        "logDecisions": {
+          "type": "boolean",
+          "description": "Log shadow mode decisions"
+        },
+        "sampleRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Sample rate for shadow mode (0-1)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "multiAgent": {
+      "type": "object",
+      "description": "Multi-agent settings (reserved for future)",
+      "required": [
+        "mode",
+        "requirePreview",
+        "stopOnModelFailure",
+        "noParallelFsWrites",
+        "enforceAllowlists",
+        "previewNoQuotaConsumption",
+        "enforceGuards"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["off", "manual", "auto"],
+          "description": "Multi-agent mode: off | manual | auto"
+        },
+        "requirePreview": {
+          "type": "boolean",
+          "description": "Require explicit preview and confirmation for every multi-agent execution"
+        },
+        "stopOnModelFailure": {
+          "type": "boolean",
+          "description": "Model failure stops execution and requires replanning"
+        },
+        "noParallelFsWrites": {
+          "type": "boolean",
+          "description": "No parallel filesystem-writing agents by default"
+        },
+        "enforceAllowlists": {
+          "type": "boolean",
+          "description": "Delegated models must satisfy same allowlists"
+        },
+        "previewNoQuotaConsumption": {
+          "type": "boolean",
+          "description": "Preview must not consume model quota"
+        },
+        "enforceGuards": {
+          "type": "boolean",
+          "description": "Agent Mesh must not bypass Free-Only or Budget Guard"
+        }
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Configuration metadata"
+    }
+  },
+  "required": [
+    "version",
+    "models",
+    "categories",
+    "defaultCategory",
+    "defaultStrategy",
+    "strategyWeights",
+    "costPolicy",
+    "cooldownConfig",
+    "shadowMode"
+  ],
+  "additionalProperties": false
+}

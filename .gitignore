@@ -1,0 +1,53 @@
+node_modules/
+dist/
+build/
+coverage/
+.vitest/
+*.tsbuildinfo
+
+.env
+.env.*
+!.env.example
+
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Package archives (generated)
+*.tgz
+
+# Compiler output maps (generated)
+*.js.map
+*.d.ts.map
+
+# Serena local state (cache, local config, memories)
+.serena/cache/
+.serena/memories/
+.serena/project.local.yml
+.serena/.gitignore
+
+# Internal development reports (not for public commit)
+docs/reports/
+
+# Private QuotaWeave development routing configuration
+/dev.route.json
+
+# Local OpenCode plugin deployment (generated)
+.opencode/plugins/*
+# Bounded agent test fixtures
+scripts/agents/.fixtures/
+.claude/settings.local.json
+
+*.pem
+*.key
+
+# Machine-local agent state and generated package inspection output
+/.serena/
+/.codegraph/
+/artifacts/

@@ -1,0 +1,29 @@
+node_modules/
+dist/
+build/
+coverage/
+.serena/
+pnpm-lock.yaml
+scripts/agents/.fixtures/
+
+# Generated package coverage reports
+**/coverage/**
+
+# Private configuration and machine-local/generated data (never format)
+/dev.route.json
+.env
+.env.*
+*.pem
+*.key
+.codegraph/
+.opencode/plugins/
+docs/reports/
+artifacts/
+
+# Other protected local configuration
+.aws/
+.ssh/
+.gnupg/
+secrets/
+credentials/
+.claude/settings.local.json

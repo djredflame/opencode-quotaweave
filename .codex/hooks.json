@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "SessionStart": {
+      "type": "command",
+      "command": "node scripts/agents/hook.ts"
+    },
+    "PreToolUse": {
+      "type": "command",
+      "command": "node scripts/agents/hook.ts"
+    },
+    "PostToolUse": {
+      "type": "command",
+      "command": "node scripts/agents/post-edit.ts"
+    },
+    "PreCompact": {
+      "type": "command",
+      "command": "node scripts/agents/hook.ts"
+    },
+    "Stop": {
+      "type": "command",
+      "command": "node scripts/agents/hook.ts"
+    }
+  }
+}

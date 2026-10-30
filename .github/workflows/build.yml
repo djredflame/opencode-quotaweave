@@ -1,0 +1,55 @@
+name: Build
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+jobs:
+  build:
+    name: Build All Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm build:all
+
+      - name: Verify package exports
+        run: |
+          for pkg in packages/*/package.json; do
+            echo "Checking $pkg..."
+            node -e "
+              const pkg = require('./$pkg');
+              if (!pkg.exports) {
+                console.error('Missing exports field');
+                process.exit(1);
+              }
+              console.log('  exports:', Object.keys(pkg.exports).join(', '));
+            "
+          done
+
+      - name: Verify dist outputs
+        run: |
+          for pkg in packages/*/dist; do
+            if [ -d "$pkg" ]; then
+              echo "Checking $pkg..."
+              ls -la "$pkg"
+            fi
+          done

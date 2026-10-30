@@ -1,0 +1,130 @@
+name: Validate Structure
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+jobs:
+  validate:
+    name: Validate Project Structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate pnpm workspace discovery
+        run: pnpm --filter='./packages/**' --fail-if-no-match list --depth=-1
+
+      - name: Validate package.json files
+        run: |
+          node -e "
+            const fs = require('fs');
+            const path = require('path');
+            const packages = Array.from(fs.globSync('packages/*/package.json'));
+            if (packages.length === 0) throw new Error('No workspace manifests found');
+            for (const pkgPath of packages) {
+              const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+              const dir = path.dirname(pkgPath);
+
+              // Required fields
+              const required = ['name', 'version', 'description', 'type', 'license', 'engines', 'scripts', 'exports'];
+              for (const field of required) {
+                if (!pkg[field]) {
+                  console.error(pkgPath, 'missing required field:', field);
+                  process.exit(1);
+                }
+              }
+
+              // Check exports
+              if (!pkg.exports || !pkg.exports['.']) {
+                console.error(pkgPath, 'missing main export');
+                process.exit(1);
+              }
+
+              // Check workspace protocol for internal deps
+              const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+              for (const [name, version] of Object.entries(deps)) {
+                if (name.startsWith('@opencode-quotaweave/') && version !== 'workspace:*') {
+                  console.error(pkgPath, 'internal dependency not using workspace protocol:', name, version);
+                  process.exit(1);
+                }
+              }
+
+              console.log('✓', pkg.name);
+            }
+          "
+
+      - name: Validate tsconfig.json files
+        run: |
+          node -e "
+            const fs = require('node:fs');
+            const ts = require('typescript');
+            const patterns = ['tsconfig.json', 'packages/*/tsconfig.json', 'packages/*/tests/tsconfig.json', 'scripts/*/tsconfig.json'];
+            for (const configPath of fs.globSync(patterns)) {
+              const parsed = ts.getParsedCommandLineOfConfigFile(configPath, {}, {
+                ...ts.sys,
+                onUnRecoverableConfigFileDiagnostic: (diagnostic) => {
+                  throw new Error(ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'));
+                },
+              });
+              if (!parsed || parsed.errors.length) throw new Error('Invalid config: ' + configPath);
+              if (parsed.options.strict !== true) throw new Error('Strict mode required: ' + configPath);
+              const packageBuild = /^packages\/[^/]+\/tsconfig.json$/.test(configPath);
+              if (packageBuild && (!parsed.options.composite || !parsed.options.declaration)) {
+                throw new Error('Composite declarations required: ' + configPath);
+              }
+              console.log('Validated:', configPath);
+            }
+          "
+
+      - name: Check for forbidden files
+        run: |
+          # No .env files committed
+          if git ls-files | grep -E '\.env(\..*)?$'; then
+            echo "ERROR: .env files found in git"
+            exit 1
+          fi
+
+          # No lockfiles other than pnpm-lock.yaml
+          if git ls-files | grep -E '(package-lock\.json|yarn\.lock|bun\.lockb)$'; then
+            echo "ERROR: Non-pnpm lockfiles found"
+            exit 1
+          fi
+
+          # No node_modules
+          if git ls-files | grep -E '^node_modules/'; then
+            echo "ERROR: node_modules found in git"
+            exit 1
+          fi
+
+          echo "✓ No forbidden files"
+
+      - name: Validate license headers
+        run: |
+          node -e "
+            const fs = require('fs');
+            const tsFiles = fs.globSync('packages/**/*.ts', { exclude: ['**/node_modules/**', '**/dist/**', '**/tests/**'] });
+            for (const file of tsFiles) {
+              const content = fs.readFileSync(file, 'utf8');
+              if (!content.startsWith('/**') && !content.startsWith('//')) {
+                console.warn('Missing file header:', file);
+              }
+            }
+            console.log('✓ License headers checked');
+          "

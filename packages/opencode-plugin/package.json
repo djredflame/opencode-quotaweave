@@ -1,0 +1,88 @@
+{
+  "name": "@opencode-quotaweave/opencode-plugin",
+  "version": "0.1.0",
+  "description": "OpenCode 2 plugin for QuotaWeave",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "model-routing",
+    "quota-management"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js",
+      "default": "./dist/server.js"
+    },
+    "./package.json": "./package.json",
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js",
+      "default": "./dist/server.js"
+    },
+    "./opencode": {
+      "types": "./dist/opencode-plugin.d.ts",
+      "import": "./dist/opencode-plugin.js",
+      "default": "./dist/opencode-plugin.js"
+    },
+    "./tui": {
+      "types": "./dist/tui/main.d.ts",
+      "import": "./dist/tui/main.js",
+      "default": "./dist/tui/main.js"
+    }
+  },
+  "main": "./dist/opencode-plugin.js",
+  "module": "./dist/opencode-plugin.js",
+  "types": "./dist/opencode-plugin.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --build && node scripts/build-solid.mjs",
+    "build:watch": "tsc --build --watch",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm typecheck:tests && pnpm test",
+    "typecheck:tests": "tsc --project tests/tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@opencode-ai/plugin": "^1.18.30",
+    "@opencode-quotaweave/core": "workspace:*",
+    "@opencode/plugin": "2.1.4",
+    "@opentui/core": "^0.6.8",
+    "@opentui/keymap": "^0.6.8",
+    "@opentui/solid": "^0.6.8",
+    "zod": "^4.1.8"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-typescript": "^7.27.1",
+    "@eslint/js": "catalog:",
+    "@opencode/theme": "2.1.4",
+    "@types/node": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "babel-preset-solid": "^1.9.12",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "globals": "catalog:",
+    "prettier": "catalog:",
+    "rimraf": "catalog:",
+    "solid-js": "^1.9.17",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:",
+    "vitest": "catalog:"
+  }
+}

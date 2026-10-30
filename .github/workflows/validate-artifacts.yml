@@ -1,0 +1,152 @@
+name: Validate Package Artifacts
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  validate-artifacts:
+    name: Validate Package Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm build:all
+
+      - name: Pack packages
+        run: |
+          mkdir -p artifacts
+          for pkg in packages/*/package.json; do
+            dir=$(dirname "$pkg")
+            name=$(node -e "console.log(require('./$pkg').name)")
+            echo "Packing $name from $dir"
+            (cd "$dir" && pnpm pack --pack-destination ../../artifacts)
+          done
+
+      - name: Validate package contents
+        run: |
+          node -e "
+            const fs = require('fs');
+            const path = require('path');
+            const { execFileSync } = require('node:child_process');
+
+            const files = fs.readdirSync('artifacts').filter(f => f.endsWith('.tgz'));
+            for (const file of files) {
+              console.log('Validating:', file);
+              const pkgPath = path.join('artifacts', file);
+
+              // Extract and validate
+              const extractDir = path.join('artifacts', 'extract', file.replace('.tgz', ''));
+              fs.mkdirSync(extractDir, { recursive: true });
+              execFileSync('tar', ['-xf', pkgPath, '-C', extractDir]);
+
+              const pkgJsonPath = path.join(extractDir, 'package', 'package.json');
+              if (!fs.existsSync(pkgJsonPath)) {
+                console.error('Missing package.json in:', file);
+                process.exit(1);
+              }
+
+              const pkg = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+
+              // Check required fields in packed package
+              const required = ['name', 'version', 'main', 'module', 'types', 'exports'];
+              for (const field of required) {
+                if (!pkg[field]) {
+                  console.error(file, 'missing', field);
+                  process.exit(1);
+                }
+              }
+
+              // Check dist files exist
+              const distDir = path.join(extractDir, 'package', 'dist');
+              if (!fs.existsSync(distDir)) {
+                console.error(file, 'missing dist directory');
+                process.exit(1);
+              }
+
+              const distFiles = fs.readdirSync(distDir);
+              if (!distFiles.includes('index.js') || !distFiles.includes('index.d.ts')) {
+                console.error(file, 'missing main dist files');
+                process.exit(1);
+              }
+
+              // Check no source files in package
+              const srcDir = path.join(extractDir, 'package', 'src');
+              if (fs.existsSync(srcDir)) {
+                console.error(file, 'contains src directory (should not be published)');
+                process.exit(1);
+              }
+
+              // Check no test files in package
+              const testDir = path.join(extractDir, 'package', 'tests');
+              if (fs.existsSync(testDir)) {
+                console.error(file, 'contains tests directory (should not be published)');
+                process.exit(1);
+              }
+
+              // Check no config files in package
+              const configs = ['tsconfig.json', 'vitest.config.ts', 'eslint.config.mjs'];
+              for (const config of configs) {
+                if (fs.existsSync(path.join(extractDir, 'package', config))) {
+                  console.error(file, 'contains', config, '(should not be published)');
+                  process.exit(1);
+                }
+              }
+
+              console.log('  ✓', pkg.name, pkg.version);
+            }
+          "
+
+      - name: Test package installation
+        run: |
+          node -e "
+            const fs = require('node:fs');
+            const path = require('node:path');
+            const { execFileSync } = require('node:child_process');
+            const files = fs.readdirSync('artifacts').filter(file => file.endsWith('.tgz'));
+            if (files.length !== 3) throw new Error('Expected all three package archives');
+            const testDir = path.resolve('artifacts', 'test-install');
+            fs.mkdirSync(testDir, { recursive: true });
+            fs.writeFileSync(path.join(testDir, 'package.json'), JSON.stringify({
+              name: 'quotaweave-install-check', private: true, type: 'module',
+              packageManager: JSON.parse(fs.readFileSync('package.json', 'utf8')).packageManager,
+            }));
+            const archives = files.map(file => path.resolve('artifacts', file));
+            const coreArchive = files.find(file => {
+              const manifest = path.join('artifacts', 'extract', file.replace('.tgz', ''), 'package', 'package.json');
+              return JSON.parse(fs.readFileSync(manifest, 'utf8')).name === '@opencode-quotaweave/core';
+            });
+            if (!coreArchive) throw new Error('Core archive missing');
+            const localCore = 'file:' + path.resolve('artifacts', coreArchive);
+            fs.writeFileSync(path.join(testDir, 'pnpm-workspace.yaml'), 'overrides:\n  ' + JSON.stringify('@opencode-quotaweave/core') + ': ' + JSON.stringify(localCore) + '\nallowBuilds:\n  msgpackr-extract: true\n');
+            console.log('Testing unpublished internal dependency against its local core archive');
+            execFileSync('pnpm', ['add', ...archives], { cwd: testDir, stdio: 'inherit' });
+            for (const file of files) {
+              const manifest = path.join('artifacts', 'extract', file.replace('.tgz', ''), 'package', 'package.json');
+              const name = JSON.parse(fs.readFileSync(manifest, 'utf8')).name;
+              const testFile = path.join(testDir, 'test-import.mjs');
+              fs.writeFileSync(testFile, 'import * as pkg from ' + JSON.stringify(name) + '; if (!Object.keys(pkg).length) throw new Error(' + JSON.stringify('Empty exports: ' + name) + ');');
+              execFileSync(process.execPath, [testFile], { cwd: testDir, stdio: 'inherit' });
+              console.log('Install and import successful:', name);
+            }
+          "
+        shell: bash

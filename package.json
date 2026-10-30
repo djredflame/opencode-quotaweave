@@ -1,0 +1,63 @@
+{
+  "name": "opencode-quotaweave",
+  "version": "0.1.0",
+  "description": "Intelligent task-aware model routing and quota optimization for OpenCode 2",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "model-routing",
+    "quota-management",
+    "typescript"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@12.15.0",
+  "scripts": {
+    "prepare": "pnpm run build:all",
+    "build:all": "pnpm --filter=./packages/** run build",
+    "build:core": "pnpm --filter=@opencode-quotaweave/core run build",
+    "build:plugin": "pnpm --filter=@opencode-quotaweave/opencode-plugin run build",
+    "build:mcp": "pnpm --filter=@opencode-quotaweave/mcp-server run build",
+    "dev:plugin": "./scripts/bash/deploy-local-plugin.sh",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "typecheck:all": "pnpm build:all && pnpm --filter=./packages/** run typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "pnpm --filter=./packages/** run test:coverage",
+    "test:all": "pnpm --filter=./packages/** run test",
+    "check": "pnpm check:all",
+    "check:all": "pnpm agents:check && pnpm typecheck:quality && pnpm typecheck:agents && pnpm test:agents && pnpm quality:all && pnpm format:check && pnpm format:bash:check && pnpm lint:bash && pnpm typecheck:all && pnpm typecheck:tests && pnpm test:all",
+    "clean": "rimraf node_modules packages/*/node_modules packages/*/dist packages/*/coverage",
+    "ci:local": "./scripts/bash/ci-local.sh",
+    "git:safety": "./scripts/bash/git-safety-check.sh",
+    "lint:bash": "shellcheck -e SC1091,SC2310,SC2312 -x scripts/bash/*.sh scripts/bash/lib/*.sh",
+    "format:bash": "shfmt -w scripts/bash/*.sh scripts/bash/lib/*.sh",
+    "format:bash:check": "shfmt -d scripts/bash/*.sh scripts/bash/lib/*.sh",
+    "agents:check": "node scripts/agents/validate.ts",
+    "test:agents": "node --experimental-test-coverage --test-coverage-lines=80 --test-coverage-branches=80 --test-coverage-functions=80 --test scripts/agents/tests/*.test.ts",
+    "quality:all": "node scripts/quality/check.ts --all",
+    "quality:changed": "node scripts/quality/check.ts",
+    "typecheck:quality": "tsc --project scripts/quality/tsconfig.json --noEmit",
+    "typecheck:agents": "tsc --project scripts/agents/tsconfig.json --noEmit",
+    "typecheck:tests": "pnpm --filter=./packages/** run typecheck:tests"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.5",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^5.0.5"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "composite": false, "allowImportingTsExtensions": true },
+  "include": ["**/*.ts", "../../scripts/agents/**/*.ts"],
+  "references": []
+}
