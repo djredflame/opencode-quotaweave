@@ -96,7 +96,7 @@ function localTarget(root: string, file: string, specifier: string): string | un
     base.replace(/\.js$/, '.tsx'),
     join(base, 'index.ts'),
   ].find((candidate) => existsSync(safePath(root, candidate)));
-  return target;
+  return target?.replace(/\\/g, '/');
 }
 
 function detectCycles(edges: Map<string, string[]>, issues: ArchitectureIssue[]): void {

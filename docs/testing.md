@@ -106,12 +106,12 @@ It does not automatically run all package coverage reports.
 
 The project targets at least 80% coverage for statements, branches, functions, and lines.
 
-| Scope | Current enforcement |
-|---|---|
-| Core | Numeric 80% thresholds |
-| MCP Server | Numeric 80% thresholds |
-| OpenCode Plugin | Coverage reporting without numeric thresholds |
-| Agent Infrastructure | Node test coverage thresholds |
+| Scope                | Current enforcement                           |
+| -------------------- | --------------------------------------------- |
+| Core                 | Numeric 80% thresholds                        |
+| MCP Server           | Numeric 80% thresholds                        |
+| OpenCode Plugin      | Coverage reporting without numeric thresholds |
+| Agent Infrastructure | Node test coverage thresholds                 |
 
 Plugin coverage is a known gap relative to the project's coverage policy.
 

@@ -220,13 +220,13 @@ Avoid unnecessary history rewriting on branches shared with other contributors.
 
 QuotaWeave follows classical GitFlow.
 
-| Branch | Purpose | Managed by |
-|---|---|---|
-| `main` | Stable source and release branch | Maintainer |
-| `develop` | Development integration branch | Maintainer |
-| `feature/*` | Features and ordinary contributions | Contributors in their forks |
-| `release/vX.Y.Z` | Release stabilization | Maintainer |
-| `hotfix/*` | Urgent production fixes | Maintainer |
+| Branch           | Purpose                             | Managed by                  |
+| ---------------- | ----------------------------------- | --------------------------- |
+| `main`           | Stable source and release branch    | Maintainer                  |
+| `develop`        | Development integration branch      | Maintainer                  |
+| `feature/*`      | Features and ordinary contributions | Contributors in their forks |
+| `release/vX.Y.Z` | Release stabilization               | Maintainer                  |
+| `hotfix/*`       | Urgent production fixes             | Maintainer                  |
 
 ### Features and Contributions
 
