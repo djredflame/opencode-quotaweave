@@ -18,11 +18,11 @@ QuotaWeave is a TypeScript/pnpm monorepo with three primary packages.
    @opencode-quotaweave/mcp-server
 ```
 
-| Package | Responsibility |
-|---|---|
-| `core` | Routing, configuration, policies, quotas, and workflows |
+| Package           | Responsibility                                              |
+| ----------------- | ----------------------------------------------------------- |
+| `core`            | Routing, configuration, policies, quotas, and workflows     |
 | `opencode-plugin` | OpenCode integration, routing tools, and terminal dashboard |
-| `mcp-server` | MCP diagnostics and stdio server integration |
+| `mcp-server`      | MCP diagnostics and stdio server integration                |
 
 Core has no direct platform filesystem imports. External file operations are supplied through `ConfigFileAccess`.
 

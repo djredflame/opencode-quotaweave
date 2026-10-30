@@ -62,16 +62,16 @@ There is no root `agents` command. Use `agents:check`.
 
 The repository defines eight GitHub Actions workflows.
 
-| Workflow | Purpose |
-|---|---|
+| Workflow                   | Purpose                                             |
+| -------------------------- | --------------------------------------------------- |
 | `agent-infrastructure.yml` | Agent validation, type checks, and fixture coverage |
-| `audit.yml` | Dependency security auditing |
-| `build.yml` | Package builds and output validation |
-| `lint.yml` | Code quality, linting, and formatting |
-| `test.yml` | Package tests and configured coverage |
-| `typecheck.yml` | TypeScript validation |
-| `validate-artifacts.yml` | Package archives and installation validation |
-| `validate-structure.yml` | Repository structure and manifest validation |
+| `audit.yml`                | Dependency security auditing                        |
+| `build.yml`                | Package builds and output validation                |
+| `lint.yml`                 | Code quality, linting, and formatting               |
+| `test.yml`                 | Package tests and configured coverage               |
+| `typecheck.yml`            | TypeScript validation                               |
+| `validate-artifacts.yml`   | Package archives and installation validation        |
+| `validate-structure.yml`   | Repository structure and manifest validation        |
 
 The workflows have been prepared for `main` and `develop` integration.
 

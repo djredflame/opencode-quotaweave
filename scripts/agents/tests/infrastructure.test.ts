@@ -147,6 +147,49 @@ void test('available package probes do not pretend a connected service or scope 
   }
 });
 
+const CANONICAL_SKILLS = [
+  'architecture',
+  'testing',
+  'security',
+  'release',
+  'git-safety',
+  'documentation',
+] as const;
+
+const CONFIG_FILES = [
+  'AGENTS.md',
+  'opencode.json',
+  '.claude/settings.json',
+  '.codex/hooks.json',
+  'CLAUDE.md',
+] as const;
+
+function setupFullFixture(fixture: string): void {
+  for (const name of CANONICAL_SKILLS) {
+    const relative = `.agents/skills/${name}/SKILL.md`;
+    mkdirSync(join(fixture, '.agents/skills', name), { recursive: true });
+    writeFileSync(join(fixture, relative), readFileSync(join(projectRoot, relative), 'utf8'));
+  }
+  mkdirSync(join(fixture, '.claude'), { recursive: true });
+  mkdirSync(join(fixture, '.codex'), { recursive: true });
+  for (const file of CONFIG_FILES) {
+    writeFileSync(join(fixture, file), readFileSync(join(projectRoot, file), 'utf8'));
+  }
+}
+
+function setupSkillsOnlyFixture(fixture: string): void {
+  for (const name of CANONICAL_SKILLS) {
+    const relative = `.agents/skills/${name}/SKILL.md`;
+    mkdirSync(join(fixture, '.agents/skills', name), { recursive: true });
+    writeFileSync(join(fixture, relative), readFileSync(join(projectRoot, relative), 'utf8'));
+  }
+  mkdirSync(join(fixture, '.claude'), { recursive: true });
+  mkdirSync(join(fixture, '.codex'), { recursive: true });
+  for (const file of ['AGENTS.md', 'opencode.json']) {
+    writeFileSync(join(fixture, file), readFileSync(join(projectRoot, file), 'utf8'));
+  }
+}
+
 function assertDocumentationSkillValidation(fixture: string): void {
   const source = join(fixture, '.agents/skills/documentation/SKILL.md');
   const content = readFileSync(source, 'utf8');
@@ -175,29 +218,7 @@ function assertDocumentationSkillValidation(fixture: string): void {
 void test('validation preserves canonical skills and rejects obsolete duplicate sources', () => {
   const fixture = createFixture();
   try {
-    for (const name of [
-      'architecture',
-      'testing',
-      'security',
-      'release',
-      'git-safety',
-      'documentation',
-    ]) {
-      const relative = `.agents/skills/${name}/SKILL.md`;
-      mkdirSync(join(fixture, '.agents/skills', name), { recursive: true });
-      writeFileSync(join(fixture, relative), readFileSync(join(projectRoot, relative), 'utf8'));
-    }
-    mkdirSync(join(fixture, '.claude'), { recursive: true });
-    mkdirSync(join(fixture, '.codex'), { recursive: true });
-    for (const file of [
-      'AGENTS.md',
-      'opencode.json',
-      '.claude/settings.json',
-      '.codex/hooks.json',
-      'CLAUDE.md',
-    ]) {
-      writeFileSync(join(fixture, file), readFileSync(join(projectRoot, file), 'utf8'));
-    }
+    setupFullFixture(fixture);
     assert.doesNotThrow(() => validate(fixture));
     const source = join(fixture, '.agents/skills/architecture/SKILL.md');
     const content = `${readFileSync(source, 'utf8')}\nVerified project-specific instructions.\n`;
@@ -216,27 +237,25 @@ void test('validation preserves canonical skills and rejects obsolete duplicate 
   }
 });
 
+void test('validation accepts Windows-style CRLF line endings in skill files', () => {
+  const fixture = createFixture();
+  try {
+    setupFullFixture(fixture);
+    for (const name of CANONICAL_SKILLS) {
+      const source = join(fixture, `.agents/skills/${name}/SKILL.md`);
+      const content = readFileSync(source, 'utf8').replace(/\r\n/g, '\n');
+      writeFileSync(source, content.replace(/\n/g, '\r\n'));
+    }
+    assert.doesNotThrow(() => validate(fixture), 'should accept CRLF line endings');
+  } finally {
+    rmSync(fixture, { recursive: true, force: true });
+  }
+});
+
 void test('validation checks real platform configuration files', () => {
   const fixture = createFixture();
   try {
-    mkdirSync(join(fixture, '.claude'), { recursive: true });
-    mkdirSync(join(fixture, '.codex'), { recursive: true });
-    // Create required skill files first
-    for (const name of [
-      'architecture',
-      'testing',
-      'security',
-      'release',
-      'git-safety',
-      'documentation',
-    ]) {
-      const relative = `.agents/skills/${name}/SKILL.md`;
-      mkdirSync(join(fixture, '.agents/skills', name), { recursive: true });
-      writeFileSync(join(fixture, relative), readFileSync(join(projectRoot, relative), 'utf8'));
-    }
-    for (const file of ['AGENTS.md', 'opencode.json']) {
-      writeFileSync(join(fixture, file), readFileSync(join(projectRoot, file), 'utf8'));
-    }
+    setupSkillsOnlyFixture(fixture);
     assert.throws(() => validate(fixture), /Claude settings missing/);
     writeFileSync(join(fixture, '.claude/settings.json'), '{}');
     assert.throws(() => validate(fixture), /Claude hooks configuration missing or invalid/);
@@ -249,10 +268,8 @@ void test('validation checks real platform configuration files', () => {
       join(fixture, '.codex/hooks.json'),
       readFileSync(join(projectRoot, '.codex/hooks.json'), 'utf8'),
     );
-    // Write CLAUDE.md that doesn't import AGENTS.md first
     writeFileSync(join(fixture, 'CLAUDE.md'), '# Not importing');
     assert.throws(() => validate(fixture), /CLAUDE.md must import/);
-    // Now write proper CLAUDE.md
     writeFileSync(join(fixture, 'CLAUDE.md'), '@AGENTS.md');
     assert.doesNotThrow(() => validate(fixture));
   } finally {
