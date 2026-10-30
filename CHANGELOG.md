@@ -6,7 +6,7 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) an
 
 ## [Unreleased]
 
-## [0.1.0] - Initial Source Version
+## [0.1.0] - 2026-10-30
 
 The initial QuotaWeave source version establishes a modular foundation for configurable AI model routing, explainable decisions, and future multi-model orchestration in OpenCode.
 
