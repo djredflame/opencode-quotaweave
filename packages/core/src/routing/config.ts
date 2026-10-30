@@ -439,6 +439,18 @@ export interface SimulationMetadata {
   heuristicCategory?: boolean;
 }
 /**
+ * Round Robin rotation state for a specific category
+ */
+export interface RoundRobinCategoryState {
+  /** Index of the last selected model in the eligible candidates list */
+  lastSelectedIndex: number;
+  /** Ordered list of eligible model IDs at the time of last selection */
+  eligibleModelIds: string[];
+  /** Timestamp of last update */
+  lastUpdated: number;
+}
+
+/**
  * Runtime state (separate from user configuration)
  */
 export interface RoutingRuntimeState {
@@ -450,6 +462,8 @@ export interface RoutingRuntimeState {
   quotaStats?: Record<string, QuotaStat>;
   /** Health statistics (future) */
   healthStats?: Record<string, HealthStat>;
+  /** Round Robin rotation state per category */
+  roundRobinState?: Record<string, RoundRobinCategoryState>;
   /** Last updated timestamp */
   lastUpdated: number;
 }

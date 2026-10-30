@@ -14,6 +14,13 @@ import type {
   SimulationRequest,
   SimulationResult,
 } from './config.js';
+
+/** Result of a routing operation including updated runtime state */
+export interface RouteResultWithState {
+  result: ConfigRouteResult;
+  updatedRuntimeState: RoutingRuntimeState;
+}
+
 export class ConfigRoutingEngine {
   private resolvedConfig: ResolvedRoutingConfig;
   constructor(resolvedConfig: ResolvedRoutingConfig) {
@@ -27,8 +34,9 @@ export class ConfigRoutingEngine {
   }
   /**
    * Route a request using the configuration
+   * Returns both the routing result and the updated runtime state (for Round Robin rotation)
    */
-  route(request: ConfigRouteRequest): ConfigRouteResult {
+  route(request: ConfigRouteRequest): RouteResultWithState {
     // Use resolvedConfig from request if provided, otherwise use engine's config
     const resolvedConfig = request.resolvedConfig ?? this.resolvedConfig;
     const originalResolvedConfig = this.resolvedConfig;
@@ -45,6 +53,7 @@ export class ConfigRoutingEngine {
   /**
    * Simulate a routing decision (pure, deterministic, no side effects)
    * Accepts optional resolvedConfig override and/or runtimeState
+   * Does NOT mutate the provided runtimeState
    */
   simulate(
     request: SimulationRequest,
