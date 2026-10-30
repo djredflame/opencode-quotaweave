@@ -6,12 +6,12 @@ The canonical structural limits are defined in `scripts/quality/limits.ts`.
 
 ## Structural Limits
 
-| Constraint | Hard limit |
-|---|---|
-| Code lines per authored file | 300 |
-| Code lines per function | 50 |
-| Function parameters | 4 |
-| Nesting depth | 3 |
+| Constraint                   | Hard limit |
+| ---------------------------- | ---------- |
+| Code lines per authored file | 300        |
+| Code lines per function      | 50         |
+| Function parameters          | 4          |
+| Nesting depth                | 3          |
 
 Blank lines and comment-only lines are excluded according to the shared counter.
 
@@ -134,11 +134,7 @@ This separates reusable configuration logic from Node-specific filesystem operat
 Example:
 
 ```typescript
-const loadedConfiguration = await findAndLoadConfig(
-  projectRoot,
-  configPath,
-  configFileAccess,
-);
+const loadedConfiguration = await findAndLoadConfig(projectRoot, configPath, configFileAccess);
 ```
 
 Public loader signatures include:

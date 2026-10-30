@@ -6,10 +6,10 @@ QuotaWeave is an independently maintained open-source project.
 
 Security fixes are considered for the current maintained version according to severity, technical impact, and maintainer availability.
 
-| Version | Status |
-|---|---|
-| 0.1.x | Initial development series; security issues reviewed as maintenance permits |
-| Earlier versions | Not supported |
+| Version          | Status                                                                      |
+| ---------------- | --------------------------------------------------------------------------- |
+| 0.1.x            | Initial development series; security issues reviewed as maintenance permits |
+| Earlier versions | Not supported                                                               |
 
 Public source availability does not imply continuous monitoring, guaranteed security updates, or fixed support periods.
 
@@ -95,11 +95,11 @@ See [Shared Agent Infrastructure](docs/development/agent-infrastructure.md) for 
 
 Reports are evaluated individually.
 
-| Severity | Example impact |
-|---|---|
-| High | Remote code execution, credential exposure, privilege escalation |
-| Medium | Significant information disclosure, denial of service, validation bypass |
-| Low | Limited-impact information leakage or security-related logic errors |
+| Severity | Example impact                                                           |
+| -------- | ------------------------------------------------------------------------ |
+| High     | Remote code execution, credential exposure, privilege escalation         |
+| Medium   | Significant information disclosure, denial of service, validation bypass |
+| Low      | Limited-impact information leakage or security-related logic errors      |
 
 These examples are guidelines rather than automatic classifications.
 

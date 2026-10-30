@@ -33,7 +33,7 @@ export function validate(root: string): void {
     if (!existsSync(safePath(root, source))) throw new Error(`Skill source missing: ${name}`);
     if (existsSync(safePath(root, `.agents/skills/${name}.md`)))
       throw new Error(`Obsolete duplicate skill source: ${name}`);
-    const content = readFileSync(safePath(root, source), 'utf8');
+    const content = readFileSync(safePath(root, source), 'utf8').replace(/\r\n/g, '\n');
     if (!content.includes(`name: ${name}\n`) || /^Generated (?:Claude )?adapter\./m.test(content))
       throw new Error(`Canonical skill instructions missing: ${name}`);
   }

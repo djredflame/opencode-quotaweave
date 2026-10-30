@@ -2,7 +2,7 @@
 
 **Smarter model decisions. Better use of your AI budget.**
 
-*Making agentic coding more accessible with free and affordable AI models.*
+_Making agentic coding more accessible with free and affordable AI models._
 
 QuotaWeave is an open-source TypeScript project for configurable AI model routing, explainable decisions, and future multi-model orchestration in [OpenCode](https://opencode.ai).
 
@@ -109,22 +109,22 @@ QuotaWeave includes an OpenCode plugin with a terminal dashboard and routing ins
 
 ### Terminal Dashboard
 
-| View | Purpose |
-|---|---|
-| **Overview** | Inspect routing configuration and status. |
-| **Models** | Explore configured model information. |
-| **Routing** | Inspect routing categories and candidate evaluation. |
-| **Policies** | Review configured policies and constraints. |
-| **Simulate** | Preview routing decisions. |
-| **System** | Inspect configuration and integration information. |
+| View         | Purpose                                              |
+| ------------ | ---------------------------------------------------- |
+| **Overview** | Inspect routing configuration and status.            |
+| **Models**   | Explore configured model information.                |
+| **Routing**  | Inspect routing categories and candidate evaluation. |
+| **Policies** | Review configured policies and constraints.          |
+| **Simulate** | Preview routing decisions.                           |
+| **System**   | Inspect configuration and integration information.   |
 
 ### Commands
 
-| Command | Purpose |
-|---|---|
-| `/route` | Open the overview. |
-| `/route-status` | Display routing status. |
-| `/route-models` | Open the model explorer. |
+| Command                  | Purpose                      |
+| ------------------------ | ---------------------------- |
+| `/route`                 | Open the overview.           |
+| `/route-status`          | Display routing status.      |
+| `/route-models`          | Open the model explorer.     |
 | `/route-simulate <task>` | Simulate routing for a task. |
 
 The OpenCode V2 server adapter also defines:
@@ -141,9 +141,9 @@ Automated tests cover relevant plugin behavior. Actual command registration, ter
 
 QuotaWeave includes an MCP server package with stdio transport and two diagnostic tools.
 
-| Tool | Purpose |
-|---|---|
-| `health_check` | Return basic server health information. |
+| Tool           | Purpose                                           |
+| -------------- | ------------------------------------------------- |
+| `health_check` | Return basic server health information.           |
 | `quota_status` | Inspect the server's in-memory quota information. |
 
 Health currently uses a static response. Quota information is local to the MCP server and does not represent live provider accounts or the OpenCode plugin's session state.
@@ -254,11 +254,11 @@ This is a development workflow, not a verified public package-installation metho
 
 QuotaWeave uses a TypeScript/pnpm monorepo with three primary packages.
 
-| Package | Responsibility |
-|---|---|
-| `@opencode-quotaweave/core` | Routing, policies, quotas, and workflow primitives. |
+| Package                                | Responsibility                                       |
+| -------------------------------------- | ---------------------------------------------------- |
+| `@opencode-quotaweave/core`            | Routing, policies, quotas, and workflow primitives.  |
 | `@opencode-quotaweave/opencode-plugin` | OpenCode integration, tools, and terminal dashboard. |
-| `@opencode-quotaweave/mcp-server` | MCP diagnostics and server integration. |
+| `@opencode-quotaweave/mcp-server`      | MCP diagnostics and server integration.              |
 
 The dependency direction is:
 
@@ -274,14 +274,14 @@ Read the [Architecture Guide](docs/architecture.md) for detailed implementation 
 
 ## Roadmap
 
-| Milestone | Focus |
-|---|---|
-| **v0.1.0 — Foundation** | Configurable routing, simulation, policies, quota and workflow primitives, OpenCode dashboard, and MCP diagnostics. |
-| **v0.2.x — Decision Intelligence** | Configurable Decision Models, approved model pools, and task classification. |
-| **v0.3.x — Active Routing** | Native OpenCode model selection and controlled transitions. |
-| **v0.4.x — Quota Brain** | Usage observations, quota-aware decisions, cooldowns, and controlled recovery. |
-| **v0.5.x — Agent Mesh** | Coordinated task decomposition and model delegation. |
-| **v0.6+ — Ecosystem & Optimization** | Expanded MCP integrations, diagnostics, and efficiency improvements. |
+| Milestone                            | Focus                                                                                                               |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| **v0.1.0 — Foundation**              | Configurable routing, simulation, policies, quota and workflow primitives, OpenCode dashboard, and MCP diagnostics. |
+| **v0.2.x — Decision Intelligence**   | Configurable Decision Models, approved model pools, and task classification.                                        |
+| **v0.3.x — Active Routing**          | Native OpenCode model selection and controlled transitions.                                                         |
+| **v0.4.x — Quota Brain**             | Usage observations, quota-aware decisions, cooldowns, and controlled recovery.                                      |
+| **v0.5.x — Agent Mesh**              | Coordinated task decomposition and model delegation.                                                                |
+| **v0.6+ — Ecosystem & Optimization** | Expanded MCP integrations, diagnostics, and efficiency improvements.                                                |
 
 The long-term vision is a development workflow in which affordable models handle routine exploration, specialized models contribute to implementation and review, and stronger reasoning models are used where their capabilities provide meaningful value.
 
@@ -312,13 +312,13 @@ See [Architecture](docs/architecture.md) and [Testing](docs/testing.md) for deta
 
 QuotaWeave follows classical GitFlow.
 
-| Branch | Purpose |
-|---|---|
-| `main` | Stable source and release branch. |
-| `develop` | Integration branch for ongoing development. |
-| `feature/*` | Feature development from `develop`. |
-| `release/vX.Y.Z` | Release stabilization from `develop`. |
-| `hotfix/*` | Urgent fixes from `main`. |
+| Branch           | Purpose                                     |
+| ---------------- | ------------------------------------------- |
+| `main`           | Stable source and release branch.           |
+| `develop`        | Integration branch for ongoing development. |
+| `feature/*`      | Feature development from `develop`.         |
+| `release/vX.Y.Z` | Release stabilization from `develop`.       |
+| `hotfix/*`       | Urgent fixes from `main`.                   |
 
 The intended flow is:
 

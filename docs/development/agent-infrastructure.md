@@ -12,14 +12,14 @@ It does not introduce an autonomous QuotaWeave agent runtime or replace the nati
 
 Six canonical skills provide specialized instructions:
 
-| Skill | Responsibility |
-|---|---|
-| `architecture` | Package boundaries, design, and maintainability |
-| `testing` | Test strategy, regressions, and coverage |
-| `security` | Trust boundaries, secrets, and safe operations |
-| `release` | Release review and preparation |
-| `git-safety` | Git mutation restrictions and safe inspection |
-| `documentation` | Accurate public documentation and references |
+| Skill           | Responsibility                                  |
+| --------------- | ----------------------------------------------- |
+| `architecture`  | Package boundaries, design, and maintainability |
+| `testing`       | Test strategy, regressions, and coverage        |
+| `security`      | Trust boundaries, secrets, and safe operations  |
+| `release`       | Release review and preparation                  |
+| `git-safety`    | Git mutation restrictions and safe inspection   |
+| `documentation` | Accurate public documentation and references    |
 
 Skills live under:
 
@@ -37,18 +37,18 @@ The `scripts/agents/` directory contains reusable tooling for coding assistants.
 
 It does not define independent AI agents.
 
-| File | Purpose |
-|---|---|
-| `hook.ts` | Shared command-hook entry point |
-| `hook-handler.ts` | Hook event handling |
-| `hook-input.ts` | Bounded hook input parsing |
-| `guard.ts` | Recognized command and path restrictions |
-| `workspace.ts` | Project root and protected-path validation |
-| `validate.ts` | Shared infrastructure validation |
-| `validate-opencode.ts` | OpenCode configuration validation |
-| `post-edit.ts` | Post-edit feedback entry point |
-| `post-edit-feedback.ts` | Advisory code-size feedback |
-| `tests/` | Infrastructure and regression fixtures |
+| File                    | Purpose                                    |
+| ----------------------- | ------------------------------------------ |
+| `hook.ts`               | Shared command-hook entry point            |
+| `hook-handler.ts`       | Hook event handling                        |
+| `hook-input.ts`         | Bounded hook input parsing                 |
+| `guard.ts`              | Recognized command and path restrictions   |
+| `workspace.ts`          | Project root and protected-path validation |
+| `validate.ts`           | Shared infrastructure validation           |
+| `validate-opencode.ts`  | OpenCode configuration validation          |
+| `post-edit.ts`          | Post-edit feedback entry point             |
+| `post-edit-feedback.ts` | Advisory code-size feedback                |
+| `tests/`                | Infrastructure and regression fixtures     |
 
 The directory is separate from the canonical Markdown instructions to avoid duplicating executable behavior across platforms.
 
@@ -178,14 +178,14 @@ See [CodeGraph](codegraph.md) and [Project Knowledge](memory.md).
 
 ## Host Compatibility
 
-| Capability | OpenCode | Codex | Claude Code |
-|---|---|---|---|
-| Shared instructions | Native project discovery | Native project discovery | `CLAUDE.md` reference |
-| Canonical skills | Host discovery | Host discovery | Host discovery |
-| Shared executable scripts | Explicit workflow | Command-hook adapters | Command-hook adapters |
-| Post-edit quality feedback | Explicit command | Advisory hook | Advisory hook |
-| Git safety | Instructions and declared permissions | Instructions and guards | Instructions and guards |
-| CodeGraph / memory | Optional connected services | Optional connected services | Optional connected services |
+| Capability                 | OpenCode                              | Codex                       | Claude Code                 |
+| -------------------------- | ------------------------------------- | --------------------------- | --------------------------- |
+| Shared instructions        | Native project discovery              | Native project discovery    | `CLAUDE.md` reference       |
+| Canonical skills           | Host discovery                        | Host discovery              | Host discovery              |
+| Shared executable scripts  | Explicit workflow                     | Command-hook adapters       | Command-hook adapters       |
+| Post-edit quality feedback | Explicit command                      | Advisory hook               | Advisory hook               |
+| Git safety                 | Instructions and declared permissions | Instructions and guards     | Instructions and guards     |
+| CodeGraph / memory         | Optional connected services           | Optional connected services | Optional connected services |
 
 Native host acceptance must be verified independently.
 
