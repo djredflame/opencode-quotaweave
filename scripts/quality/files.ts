@@ -57,7 +57,7 @@ export function changedSourceFiles(root: string): string[] {
 export function explicitSourceFiles(root: string, files: string[]): string[] {
   const allowed = new Set(allSourceFiles(root));
   return files.map((file) => {
-    const normalized = relative(root, safePath(root, file));
+    const normalized = relative(root, safePath(root, file)).replace(/\\/g, '/');
     if (!allowed.has(normalized)) throw new Error('Expected an existing authored source file');
     return normalized;
   });
