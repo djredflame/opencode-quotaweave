@@ -243,7 +243,8 @@ void test('validation accepts Windows-style CRLF line endings in skill files', (
     setupFullFixture(fixture);
     for (const name of CANONICAL_SKILLS) {
       const source = join(fixture, `.agents/skills/${name}/SKILL.md`);
-      writeFileSync(source, readFileSync(source, 'utf8').replace(/\n/g, '\r\n'));
+      const content = readFileSync(source, 'utf8').replace(/\r\n/g, '\n');
+      writeFileSync(source, content.replace(/\n/g, '\r\n'));
     }
     assert.doesNotThrow(() => validate(fixture), 'should accept CRLF line endings');
   } finally {
